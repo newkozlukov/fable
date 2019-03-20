@@ -16,12 +16,13 @@ train_tslm <- function(.data, formula, specials, ...){
   
   fit <- stats::lm(model_formula, .data, na.action = stats::na.exclude, ...)
   fitted <- predict(fit, .data)
+  fitSummary <- summary(fit)
   
   structure(
     list(
       model = fit,
-      par = tibble(term = names(coef(fit))%||%chr(),
-                   !!!as_tibble(`colnames<-`(coef(summary(fit)), c("estimate", "std.error", "statistic", "p.value")))),
+      par = tibble(term = rownames(coef(fitSummary))%||%chr(),
+                   !!!as_tibble(`colnames<-`(coef(fitSummary), c("estimate", "std.error", "statistic", "p.value")))),
       est = est %>% 
         mutate(.fitted = fitted,
                .resid = !!residuals(fit))
